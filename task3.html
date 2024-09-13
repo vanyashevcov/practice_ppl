@@ -47,6 +47,7 @@
 
   <!-- Додатковий JavaScript-код з перевіркою завдання -->
   <script>
+    // Функція для перевірки завдання
     function checkTask() {
       var code = codeMirror.getValue().trim();
       var resultElement = document.getElementById('result');
@@ -59,20 +60,19 @@
       // Парсинг коду як HTML
       var parser = new DOMParser();
       var doc = parser.parseFromString(code, 'text/html');
-
-      var commentNode = doc.createComment('Recipe page markup');
-      var firstChild = doc.body.firstChild;
-
       let errors = [];
 
-      // Перевірка наявності коментаря
-      if (!code.includes('<!-- Recipe page markup -->')) {
-        errors.push('В коді відсутній коментар.');
+      // Перевірка наявності коментаря з ігноруванням зайвих пробілів
+      const commentRegex = /<!--\s*Recipe page markup\s*-->/i;
+        if (!commentRegex.test(code)) {
+        errors.push('В коді відсутній або некоректний коментар.');
       }
 
-      // Перевірка порядку елементів
-      if (firstChild && firstChild.nodeType !== Node.COMMENT_NODE) {
-        errors.push('Коментар має бути перед заголовком сторінки.');
+      // Перевірка, що коментар знаходиться перед заголовком
+      var commentPosition = code.indexOf('<!--');
+      var h1Position = code.indexOf('<h1>');
+      if (commentPosition > h1Position) {
+        errors.push('Коментар повинен бути перед заголовком сторінки.');
       }
 
       if (errors.length === 0) {
