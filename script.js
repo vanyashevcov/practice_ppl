@@ -1,37 +1,42 @@
+// Ініціалізація редактора CodeMirror
 var codeMirror = CodeMirror.fromTextArea(document.getElementById('task1'), {
   lineNumbers: true,
   mode: 'htmlmixed',
   theme: 'material',
-  lineWrapping: true  // Ця опція додає автопереноси
+  lineWrapping: true  // Додає автопереноси
 });
 
-codeMirror.on('change', function(cm) {
-  cm.save();
-  updateOutput();
-});
+// Зберігаємо початковий вміст редактора
+var initialCode = codeMirror.getValue();
 
+// Функція для оновлення вмісту iframe з результатом
 function updateOutput() {
   var code = codeMirror.getValue();
-  var outputFrame = document.getElementById('output').contentDocument;
-  outputFrame.open();
-  outputFrame.write(code);
-  outputFrame.close();
+  var iframe = document.getElementById('output');
+  var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+  iframeDoc.open();
+  iframeDoc.write(code);
+  iframeDoc.close();
 }
 
+// Викликаємо updateOutput при кожній зміні в редакторі
+codeMirror.on('change', updateOutput);
+
+// Викликаємо функцію одразу після завантаження сторінки, щоб відобразити початковий код
+updateOutput();
+
+// Функція для скидання вмісту редактора до початкового стану
 function resetPage() {
-  location.reload();
-}
-
-function openCity(evt, cityName) {
-  var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
+  codeMirror.setValue(initialCode);
+  // Очищаємо повідомлення про результати
+  var resultElement = document.getElementById('result');
+  resultElement.textContent = '';
+  resultElement.classList.remove('result-success', 'result-failure');
+  // Приховуємо кнопку наступного завдання, якщо вона є
+  var nextButton = document.querySelector('.next-button');
+  if (nextButton) {
+    nextButton.style.display = 'none';
   }
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-  document.getElementById(cityName).style.display = "block";
-  evt.currentTarget.className += " active";
+  // Оновлюємо результат після скидання
+  updateOutput();
 }

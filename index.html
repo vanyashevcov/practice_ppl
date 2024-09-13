@@ -12,7 +12,8 @@
   <div class="container">
     <div class="code-input">
       <h3 style="color: #fff; margin-left: 20px;">Редактор HTML:</h3>
-      <textarea id="task1" class="code-input">A light and gently sweet breakfast dish or a dessert for picky eaters. With crispy coating and the light and soft inside, you get a lovely balance of flavors and textures.These delicious pancakes pair perfectly with sour cream and fruit in pretty much any form.</textarea>
+      <textarea id="task1"
+        class="code-input">A light and gently sweet breakfast dish or a dessert for picky eaters. With crispy coating and the light and soft inside, you get a lovely balance of flavors and textures. These delicious pancakes pair perfectly with sour cream and fruit in pretty much any form.</textarea>
       <button class="check-button" onclick="checkTask()">Перевірити</button>
       <button class="reset-button" onclick="resetPage()">Скинути</button>
       <div id="result" class="result"></div>
@@ -25,7 +26,7 @@
     </div>
   </div>
 
-  <!-- Модальное окно -->
+  <!-- Модальне вікно -->
   <div id="errorModal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeModal()">&times;</span>
@@ -34,19 +35,18 @@
     </div>
   </div>
 
+  <!-- Підключення бібліотек CodeMirror -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/mode/htmlmixed/htmlmixed.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/mode/xml/xml.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/addon/selection/active-line.min.js"></script>
 
-  <script>
-    var codeMirror = CodeMirror.fromTextArea(document.getElementById('task1'), {
-      lineNumbers: true,
-      mode: 'htmlmixed',
-      theme: 'material',
-      lineWrapping: true  // Додає автопереноси
-    });
+  <!-- Підключення script.js -->
+  <script src="script.js"></script>
 
+  <!-- Додатковий JavaScript-код з перевіркою завдання -->
+  <script>
+    // Функція для перевірки завдання
     function checkTask() {
       var code = codeMirror.getValue().trim();
       var resultElement = document.getElementById('result');
@@ -56,7 +56,7 @@
       resultElement.textContent = '';
       resultElement.classList.remove('result-success', 'result-failure');
 
-      // Критерії завдання
+      // Критерії перевірки завдання
       var hasOpeningPTag = code.includes('<p>');
       var hasClosingPTag = code.includes('</p>');
       var isWrappedInPTags = code.startsWith('<p>') && code.endsWith('</p>');
@@ -65,7 +65,9 @@
       if (hasOpeningPTag && hasClosingPTag && isWrappedInPTags) {
         resultElement.textContent = 'Правильно!';
         resultElement.classList.add('result-success');
-        nextButton.style.display = 'block';
+        if (nextButton) {
+          nextButton.style.display = 'block';
+        }
       } else {
         let errors = [];
 
@@ -82,10 +84,13 @@
         }
 
         showErrorModal(errors.join(' '));
-        nextButton.style.display = 'none';
+        if (nextButton) {
+          nextButton.style.display = 'none';
+        }
       }
     }
 
+    // Функції для роботи з модальним вікном
     function showErrorModal(message) {
       var modal = document.getElementById('errorModal');
       var modalMessage = document.getElementById('modalErrorMessage');
