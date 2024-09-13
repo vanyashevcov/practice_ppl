@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Кодинг завдання</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/theme/material.min.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="code-input">
+      <h3 style="color: #fff; margin-left: 20px;">Редактор HTML:</h3>
+      <textarea id="task1"
+        class="code-input">&lt;p&gt;A light and gently sweet breakfast dish or a dessert for picky eaters. With
+        crispy coating and the light and soft inside, you get a lovely balance of
+        flavors and textures. These delicious pancakes pair perfectly with sour cream
+        and fruit in pretty much any form.&lt;/p&gt;</textarea>
+      <button class="check-button" onclick="checkTask()">Перевірити</button>
+      <button class="reset-button" onclick="resetPage()">Скинути</button>
+      <div id="result" class="result"></div>
+    </div>
+    <div class="output">
+      <h2>Результат:</h2>
+      <div id="output-frame-wrapper">
+        <iframe id="output" frameborder="0" width="100%" height="100%"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальне вікно -->
+  <div id="errorModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <p id="modalErrorMessage"></p>
+      <button class="modal-button" onclick="closeModal()">Закрити</button>
+    </div>
+  </div>
+
+  <!-- Підключення бібліотек CodeMirror -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/mode/htmlmixed/htmlmixed.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.1/addon/selection/active-line.min.js"></script>
+
+  <!-- Підключення script.js -->
+  <script src="script.js"></script>
+
+  <!-- Додатковий JavaScript-код з перевіркою завдання -->
+  <script>
+     function checkTask() {
+        var code = codeMirror.getValue().trim();
+        var resultElement = document.getElementById('result');
+        var nextButton = document.querySelector('.next-button');
+
+        // Очищення результату
+        resultElement.textContent = '';
+        resultElement.classList.remove('result-success', 'result-failure');
+
+        // Парсинг коду як HTML
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(code, 'text/html');
+
+        var h1Elements = doc.getElementsByTagName('h1');
+        var pElements = doc.getElementsByTagName('p');
+
+        let errors = [];
+
+        // Перевірка наявності h1
+        if (h1Elements.length === 0) {
+          errors.push('В коді відсутній тег <h1>.');
+        } else {
+          // Перевірка відкриваючого і закриваючого тегів h1
+          var h1Content = h1Elements[0].innerHTML.trim();
+          if (h1Content !== 'Sweet cheese pancakes') {
+            errors.push('Текст заголовку некоректний або не знаходиться всередині тега <h1>.');
+          }
+        }
+
+        // Перевірка порядку елементів
+        if (doc.body.firstElementChild && doc.body.firstElementChild.tagName.toLowerCase() !== 'h1') {
+          errors.push('Елемент <h1> повинен бути перед абзацом з описом рецепта.');
+        }
+
+        // Перевірка наявності p
+        if (pElements.length === 0) {
+          errors.push('В коді відсутній тег <p> з описом рецепта.');
+        }
+
+        if (errors.length === 0) {
+          resultElement.textContent = 'Правильно!';
+          resultElement.classList.add('result-success');
+          if (nextButton) {
+            nextButton.style.display = 'block';
+          }
+        } else {
+          showErrorModal(errors.join(' '));
+          if (nextButton) {
+            nextButton.style.display = 'none';
+          }
+        }
+      }
+
+      // Функції для роботи з модальним вікном
+      function showErrorModal(message) {
+        var modal = document.getElementById('errorModal');
+        var modalMessage = document.getElementById('modalErrorMessage');
+        modalMessage.textContent = message;
+        modal.style.display = 'flex';
+      }
+
+      function closeModal() {
+        var modal = document.getElementById('errorModal');
+        modal.style.display = 'none';
+      }
+  </script>
+
+</body>
+
+</html>
