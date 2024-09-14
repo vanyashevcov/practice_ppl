@@ -59,7 +59,7 @@
             resultElement.textContent = '';
             resultElement.classList.remove('result-success', 'result-failure');
 
-            // Парсинг коду як HTML
+            // Перетворення коду в HTML-документ для перевірки
             var parser = new DOMParser();
             var doc = parser.parseFromString(code, 'text/html');
             let errors = [];
@@ -69,10 +69,10 @@
             if (!linkElement) {
                 errors.push('В коді відсутнє посилання.');
             } else {
-                // Перевірка наявності атрибута href
+                // Перевірка наявності атрибута href і значення атрибута з урахуванням лапок
                 if (!linkElement.hasAttribute('href')) {
                     errors.push('Посилання повинно мати атрибут href.');
-                } else if (linkElement.getAttribute('href') !== '"https://instagram.com/ppl.1946"') {
+                } else if (linkElement.getAttribute('href') !== 'https://instagram.com/ppl.1946') {
                     errors.push('Значення атрибута href некоректне.');
                 }
 
