@@ -59,33 +59,17 @@
             resultElement.textContent = '';
             resultElement.classList.remove('result-success', 'result-failure');
 
-            // Перетворення коду в HTML-документ для перевірки
-            var parser = new DOMParser();
-            var doc = parser.parseFromString(code, 'text/html');
             let errors = [];
 
-            // Перевірка наявності посилання
-            var linkElement = doc.querySelector('a');
-            if (!linkElement) {
-                errors.push('В коді відсутнє посилання.');
-            } else {
-                // Перевірка наявності атрибута href і значення атрибута з урахуванням лапок
-                if (!linkElement.hasAttribute('href')) {
-                    errors.push('Посилання повинно мати атрибут href.');
-                } else if (linkElement.getAttribute('href') !== 'https://instagram.com/ppl.1946') {
-                    errors.push('Значення атрибута href некоректне.');
-                }
-
-                // Перевірка контенту всередині тегу <a>
-                if (linkElement.textContent.trim() !== "Author's profile") {
-                    errors.push('Текст всередині посилання некоректний.');
-                }
+            // Перевірка наявності посилання з лапками навколо href
+            const regex = /<a\s+href="https:\/\/instagram\.com\/ppl\.1946"\s*>Author's profile<\/a>/;
+            if (!regex.test(code)) {
+                errors.push('Посилання повинно мати атрибут href з лапками та правильним значенням, а також правильний текст всередині тега <a>.');
             }
 
-            // Перевірка, що посилання знаходиться після опису рецепта
-            var pElement = doc.querySelector('p');
-            if (pElement && pElement.nextElementSibling !== linkElement) {
-                errors.push('Посилання повинно знаходитися одразу після опису рецепта.');
+            // Перевірка наявності абзацу перед посиланням
+            if (!code.includes('</p>\n<a')) {
+                errors.push('Посилання повинно бути одразу після абзацу.');
             }
 
             if (errors.length === 0) {
@@ -115,7 +99,6 @@
             modal.style.display = 'none';
         }
     </script>
-
 </body>
 
 </html>
